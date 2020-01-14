@@ -4,6 +4,8 @@
 @LastEditors  : fzzjj2008
 @LastEditTime : 2020-01-14 08:35:25
 '''
+import sys, os
+sys.path.append(os.getcwd())
 import pytest
 from unittest.mock import patch, Mock
 from hello.clazz import Clazz
@@ -18,37 +20,25 @@ class TestClazz:
         TEACHER = '李老师'
         STU_LIST = ['张三', '李四']
         # mock替换函数
-        mock_teacher.greet.return_value = '%s: greet_student'
-        mock_student.greet.return_value = '%s: greet_teacher'
+        mock_teacher.greet.return_value = 'greet_student\n'
+        mock_student.greet.return_value = 'greet_teacher\n'
         clazz = Clazz(TEACHER, STU_LIST)
         clazz.tea = mock_teacher
-        for student in clazz.stu:
-            student = mock_student
+        for index in range(len(clazz.stu)):
+            clazz.stu[index] = mock_student
         # 测试
-        assert clazz.greet() == '李老师: greet_student\n张三：greet_teacher\李四：greet_teacher'
+        assert clazz.greet() == 'greet_student\ngreet_teacher\ngreet_teacher\n'
 
-    @patch("hello.student.Student")
-    def test_exam(self, mock_student):
+    @patch.object(Student, "print_score")
+    def test_exam(self, mock_score):
         TEACHER = '李老师'
         STU_LIST = ['张三', '李四']
-        SCORE_DICT = {'张三' : 66, '王五': 88}
+        SCORE_DICT = {'张三' : 66, '李四': 66}
         # mock替换函数
-        def mock_print_score():
-            level = ''
-            if score >= 0 and score < 60:
-                level = 'E'
-            elif score >= 60 and score < 70:
-                level = 'D'
-            elif score >= 70 and score < 80:
-                level = 'C'
-            elif score >= 80 and score < 90:
-                level = 'B'
-            elif score >= 90 and score <= 100:
-                level = 'A'
-            return 'level: %s' % level
-
+        mock_score.return_value = '及格'
         clazz = Clazz(TEACHER, STU_LIST)
-        for student in clazz.stu:
-            student.print_score = mock_print_score
+        for index in range(len(clazz.stu)):
+            clazz.stu[index].print_score = mock_score
         # 测试
-        assert clazz.exam(SCORE_DICT) == '张三 考试成绩：及格\n李四 '
+        ret = clazz.exam(SCORE_DICT)
+        assert ret == '及格及格'

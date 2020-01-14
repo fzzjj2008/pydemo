@@ -5,8 +5,10 @@
 @LastEditTime : 2020-01-14 07:39:59
 '''
 
+import sys, os
+sys.path.append(os.getcwd())
 import pytest
-from hello.student import Teacher, Student
+from hello.student import Person, Teacher, Student
 
 class TestStudent:
     
@@ -30,7 +32,7 @@ class TestStudent:
         assert stu.score == 0
         stu.set_score(SCORE)
         assert stu.score == SCORE
-        assert stu.print_score() == '小明 考试成绩：99\n'
+        assert stu.print_score() == '小明 考试成绩：优\n'
     
     def test_student_score_err(self):
         STUDENT = '小明'
@@ -40,4 +42,5 @@ class TestStudent:
         assert stu.score == 0
         stu.set_score(SCORE)
         assert stu.score == SCORE
-        assert stu.print_score() == AttributeError('输入错误')
+        with pytest.raises(AttributeError):
+            stu.print_score()
